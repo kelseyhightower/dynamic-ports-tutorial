@@ -55,7 +55,7 @@ kubectl logs $(kubectl get pods -l app=dynamic-port-server \
 
 At this point the `dynamic-port-server` is registered with the `service-registry`. You can now hit the `dynamic-port-server` on the advertised address.
 
-![The dynamic-port-server dashboard](images/service-registry-dashboard-updated.png)
+![The dynamic-port-server dashboard](images/dynamic-port-server-dashboard.png)
 
 ### The Service Registry Dashboard
 
