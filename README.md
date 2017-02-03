@@ -23,9 +23,15 @@ net.Listen("tcp4", "0.0.0.0:0")
 
 * Each container is responsible for registering its endpoints with a service registry. Kubernetes built-in service discovery does not work with this use case.
 
-The example applications provide an example way to do this.
 
-### Service Registry
+## Usage
+
+The tutorial will leverage the following components:
+
+* `service-registry` - an example registration service with basic support for health checks.
+* `dynamic-port-server` - A simple HTTP service that binds to a dynamic port at startup time.
+
+### `service-registry`
 
 The service registry provides a centralized registration service where applications can post their endpoint information. Each service record includes the following information:
 
