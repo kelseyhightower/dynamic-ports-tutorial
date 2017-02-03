@@ -53,6 +53,10 @@ kubectl logs $(kubectl get pods -l app=dynamic-port-server \
 ...
 ```
 
+At this point the `dynamic-port-server` is registered with the `service-registry`. You can now hit the `dynamic-port-server` on the advertised address.
+
+![The dynamic-port-server dashboard](images/service-registry-dashboard-updated.png)
+
 ### The Service Registry Dashboard
 
 ```
@@ -64,6 +68,14 @@ kubectl port-forward \
 
 Visit http://127.0.0.1:8888
 
+
+![Service Registry](images/service-registry-dashboard.png)
+
 ```
 kubectl scale deployments dynamic-port-server --replicas=3
 ```
+
+![Service Registry](images/service-registry-dashboard-updated.png)
+
+
+![The dynamic-port-server dashboard](images/service-registry-dashboard-updated.png)
