@@ -21,7 +21,7 @@ spec:
 net.Listen("tcp4", "0.0.0.0:0")
 ```
 
-* Each container is responsible for registering its endpoints with a service registry. Kubernetes built-in service discovery does not work
+* Each container is responsible for registering its endpoints with a service registry. Kubernetes built-in service discovery does not work with this use case.
 
 The example applications provide an example way to do this.
 
