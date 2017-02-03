@@ -2,8 +2,26 @@
 
 This tutorial will walk you through running pods using dynamic ports. This is a specialized use case and should only be used in very rare cases. If you gotta ask, then you probably don't need this.
 
-* Allocate a dynamic port per pod
-* Bypass Kubernetes built-in service discovery
+## Overview
+
+* Each pod joins the host network
+
+```
+# deployments/dynamic-port-server.yaml 
+spec:
+  hostNetwork: true
+  containers:
+    ...
+```
+
+* Each container allocates a dynamic port by binding to port 0:
+
+```
+# dynamic-port-server/main.go
+net.Listen("tcp4", "0.0.0.0:0")
+```
+
+* Each container is responsible for registering its endpoints with a service registry. Kubernetes built-in service discovery does not work
 
 The example applications provide an example way to do this.
 
