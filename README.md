@@ -58,9 +58,14 @@ The `dynamic-port-server` starts a basic web server on a dynamic port and regist
 
 Create the `dynamic-port-server` deployment:
 
+> Note: you must use the service IP of the `registry-service` directly because ports that join the host network namespace are not configured to use the Kubernetes DNS service.
+
+Edit the `deployments/dynamic-port-server.yaml` and the `-service-registry` flag to point to the cluster IP assigned to the `service-registry` service
+
 ```
 kubectl create -f deployments/dynamic-port-server.yaml
 ```
+
 
 Review the `dynamic-port-server` logs:
 
