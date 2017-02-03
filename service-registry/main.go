@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,9 +10,17 @@ import (
 	"time"
 )
 
-var httpClient *http.Client
+var (
+	httpClient *http.Client
+	listenAddr string
+)
 
 func main() {
+	flag.StringVar(&listenAddr, "listen-addr", "127.0.0.1:8888", "HTTP listen address")
+	flag.Parse()
+
+	log.Println("Starting service registry...")
+
 	timeout := 5 * time.Second
 	httpClient = &http.Client{
 		Timeout: timeout,
@@ -21,7 +30,7 @@ func main() {
 	go bm.healthChecks()
 
 	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		bm.add(r.FormValue("backend"), r.FormValue("address"))
+		bm.add(r.FormValue("name"), r.FormValue("address"))
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +45,7 @@ func main() {
 		}
 	})
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:80", nil))
+	log.Fatal(http.ListenAndServe(listenAddr, nil))
 }
 
 type BackendManager struct {
@@ -47,19 +56,19 @@ type BackendManager struct {
 func newBackendManager() *BackendManager {
 	return &BackendManager{
 		backends: make(map[string]string),
-		m: &sync.Mutex{},
+		m:        &sync.Mutex{},
 	}
 }
 
-func (bm *BackendManager) add(backend, address string) {
+func (bm *BackendManager) add(name, address string) {
 	bm.m.Lock()
-	bm.backends[backend] = address
+	bm.backends[name] = address
 	bm.m.Unlock()
 }
 
-func (bm *BackendManager) delete(backend string) {
+func (bm *BackendManager) delete(name string) {
 	bm.m.Lock()
-	delete(bm.backends, backend)
+	delete(bm.backends, name)
 	bm.m.Unlock()
 }
 
@@ -75,7 +84,7 @@ func (bm *BackendManager) getBackends() map[string]string {
 
 func (bm *BackendManager) healthChecks() {
 	for {
-		for backend, address := range bm.backends {
+		for name, address := range bm.backends {
 			var healthy bool
 			for i := 0; i <= 3; i++ {
 				resp, err := httpClient.Get(fmt.Sprintf("http://%s/healthz", address))
@@ -96,7 +105,7 @@ func (bm *BackendManager) healthChecks() {
 			}
 
 			if !healthy {
-				bm.delete(backend)
+				bm.delete(name)
 			}
 		}
 
@@ -113,8 +122,9 @@ var html = `
   </head>
   <body>
     <h1>Service Registry</h1>
-	{{range $backend, $address := . }}
-    <p>{{$backend}}: {{$address}}</p>
+	{{range $name, $address := . }}
+    <h2>Backends</h2>
+    <p>{{$name}}: {{$address}}</p>
     {{end}}
   <body>
 </html>

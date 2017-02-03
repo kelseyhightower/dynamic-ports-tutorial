@@ -1,3 +1,0 @@
-bash build
-docker build -t gcr.io/hightowerlabs/server:0.0.1 .
-gcloud docker -- push gcr.io/hightowerlabs/server:0.0.1

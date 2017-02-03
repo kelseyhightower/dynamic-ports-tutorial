@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+  name: service-registry
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: service-registry
+    spec:
+      containers:
+        - name: service-registry
+          image: gcr.io/hightowerlabs/service-registry:0.0.1
+          args:
+            - "-listen-addr=0.0.0.0:80"

@@ -1,0 +1,4 @@
+./build
+docker build -t gcr.io/hightowerlabs/dynamic-port-server:0.0.1 .
+gcloud docker -- push gcr.io/hightowerlabs/dynamic-port-server:0.0.1
+rm dynamic-port-server
