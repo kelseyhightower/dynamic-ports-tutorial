@@ -57,7 +57,10 @@ At this point the `dynamic-port-server` is registered with the `service-registry
 
 ![The dynamic-port-server dashboard](images/dynamic-port-server-dashboard.png)
 
-### The Service Registry Dashboard
+
+### The Service Registry UI
+
+The `service-registry` exposes as basic web UI listing the registered backends. Connect to the `service-registry` UI:
 
 ```
 kubectl port-forward \
@@ -71,11 +74,13 @@ Visit http://127.0.0.1:8888
 
 ![Service Registry](images/service-registry-dashboard.png)
 
+
+Add more `dynamic-port-server` backends:
+
 ```
 kubectl scale deployments dynamic-port-server --replicas=3
 ```
 
+Refresh the `service-registry` UI:
+
 ![Service Registry](images/service-registry-dashboard-updated.png)
-
-
-![The dynamic-port-server dashboard](images/service-registry-dashboard-updated.png)
