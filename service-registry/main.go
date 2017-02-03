@@ -122,8 +122,8 @@ var html = `
   </head>
   <body>
     <h1>Service Registry</h1>
-	{{range $name, $address := . }}
     <h2>Backends</h2>
+	{{range $name, $address := . }}
     <p>{{$name}}: {{$address}}</p>
     {{end}}
   <body>

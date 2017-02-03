@@ -11,7 +11,7 @@ The example applications provide an example way to do this.
 
 The service registry provides a centralized registration service where applications can post their endpoint information. Each service record includes the following information:
 
-* Unique service instance name (dynamic-port-server-4kkp0)
+* Unique service instance name (dynamic-port-server-507527175-5bphp)
 * Service address (10.240.0.2:52238)
 
 Create the `service-registry` deployment:
@@ -51,4 +51,19 @@ kubectl logs $(kubectl get pods -l app=dynamic-port-server \
 2017/02/03 20:37:34 Registering advertised endpoint [35.185.194.181:43800]
 35.185.194.181:34724 - - [Fri, 03 Feb 2017 20:37:38 UTC] "GET /healthz HTTP/1.1" Go-http-client/1.1
 ...
+```
+
+### The Service Registry Dashboard
+
+```
+kubectl port-forward \
+  $(kubectl get pods -l app=service-registry \
+    -o jsonpath='{.items[0].metadata.name}') \
+  8888:80
+```
+
+Visit http://127.0.0.1:8888
+
+```
+kubectl scale deployments dynamic-port-server --replicas=3
 ```
