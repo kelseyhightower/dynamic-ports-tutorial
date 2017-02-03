@@ -23,5 +23,5 @@ spec:
           args:
             - "-register-instance-external-ip=true"
             - "-service-instance-name=$(POD_NAME)"
-            - "-service-registry=104.196.242.40"
+            - "-service-registry=$(SERVICE_REGISTRY_SERVICE_HOST)"
 
