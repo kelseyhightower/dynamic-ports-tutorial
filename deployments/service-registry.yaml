@@ -12,6 +12,14 @@ spec:
     spec:
       containers:
         - name: service-registry
-          image: gcr.io/hightowerlabs/service-registry:0.0.1
+          image: gcr.io/hightowerlabs/service-registry:0.0.2
+          imagePullPolicy: Always
           args:
             - "-listen-addr=0.0.0.0:80"
+          volumeMounts:
+            - name: certs
+              mountPath: "/etc/ssl/certs"
+      volumes:
+        - name: certs
+          hostPath:
+            path: "/etc/ssl/certs"
