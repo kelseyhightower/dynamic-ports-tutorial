@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"reflect"
 	"sync"
 	"time"
 
@@ -38,14 +39,31 @@ var html = `
 <html>
   <head>
     <meta charset="UTF-8">
+    <style>
+      th, td {
+        text-align: left;
+        padding-right: 1.5em;
+      }
+    </style>
     <title>Registry</title>
   </head>
   <body>
     <h1>Service Registry</h1>
     <h2>Backends</h2>
+	<table>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Status</th>
+      </tr>
 	{{range $name, $endpoint := . }}
-    <p>{{$name}}: {{$endpoint.Address}}</p>
+      <tr>
+        <td>{{$name}}</td>
+        <td><a href="http://{{$endpoint.Address}}">{{$endpoint.Address}}</a></td>
+        <td></td>
+      </tr>
     {{end}}
+    </table>
   <body>
 </html>
 `
@@ -168,6 +186,7 @@ func deleteFirewallRule(name string) error {
 }
 
 func createFirewallRule(endpoint Endpoint) error {
+	log.Printf("creating firewall rule for %s [%s]", endpoint.Name, endpoint.Address)
 	ctx := context.Background()
 	hc, err := google.DefaultClient(ctx, compute.CloudPlatformScope)
 	if err != nil {
@@ -219,6 +238,15 @@ func newBackendManager() *BackendManager {
 
 func (bm *BackendManager) add(endpoint Endpoint) {
 	bm.m.Lock()
+
+	ep, ok := bm.backends[endpoint.Name]
+	if ok {
+		if reflect.DeepEqual(endpoint, ep) {
+			bm.m.Unlock()
+			return
+		}
+	}
+
 	bm.backends[endpoint.Name] = endpoint
 	bm.m.Unlock()
 
