@@ -147,6 +147,26 @@ func getVauleFromMetadata(path string) (string, error) {
 	return string(value), nil
 }
 
+func deleteFirewallRule(name string) error {
+	ctx := context.Background()
+	hc, err := google.DefaultClient(ctx, compute.CloudPlatformScope)
+	if err != nil {
+		return err
+	}
+
+	c, err := compute.New(hc)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Firewalls.Delete(project, name).Context(ctx).Do()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func createFirewallRule(endpoint Endpoint) error {
 	ctx := context.Background()
 	hc, err := google.DefaultClient(ctx, compute.CloudPlatformScope)
@@ -212,6 +232,11 @@ func (bm *BackendManager) delete(name string) {
 	bm.m.Lock()
 	delete(bm.backends, name)
 	bm.m.Unlock()
+
+	err := deleteFirewallRule(name)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func (bm *BackendManager) getBackends() map[string]Endpoint {

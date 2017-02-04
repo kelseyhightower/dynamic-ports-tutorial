@@ -104,10 +104,16 @@ func main() {
 		Tags:    tags,
 	}
 
-	err = registerEndpoint(e)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Keep the endpoint registered.
+	go func() {
+		for {
+			err := registerEndpoint(e)
+			if err != nil {
+				log.Println(err)
+			}
+			time.Sleep(30 * time.Second)
+		}
+	}()
 
 	// Register HTTP Handlers
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
