@@ -15,7 +15,20 @@ spec:
           image: gcr.io/hightowerlabs/service-registry:0.0.2
           imagePullPolicy: Always
           args:
-            - "-listen-addr=0.0.0.0:80"
+            - "-api=0.0.0.0:10080"
+            - "-http=0.0.0.0:80"
+          ports:
+            - name: api
+              containerPort: 10080
+            - name: http
+              containerPort: 80
+          resources:
+            limits:
+              cpu: 300m
+              memory: 20Mi
+            requests:
+              cpu: 200m
+              memory: 10Mi
           volumeMounts:
             - name: certs
               mountPath: "/etc/ssl/certs"

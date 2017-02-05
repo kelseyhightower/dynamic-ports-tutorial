@@ -49,7 +49,7 @@ type Endpoint struct {
 
 func main() {
 	flag.StringVar(&advertisedIP, "advertised-ip", "", "The advertised IP address to register.")
-	flag.StringVar(&serviceRegistryAddr, "service-registry", "127.0.0.1:8888", "The remote service registry address.")
+	flag.StringVar(&serviceRegistryAddr, "service-registry", "127.0.0.1:10080", "The remote service registry address.")
 	flag.BoolVar(&registerExternalIP, "register-instance-external-ip", false, "Register the external IP address of the compute instance.")
 	flag.StringVar(&serviceInstanceName, "service-instance-name", "", "The unique service instance name.")
 	flag.Parse()

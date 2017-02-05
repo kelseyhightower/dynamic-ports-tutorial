@@ -47,7 +47,7 @@ kubectl create -f deployments/service-registry.yaml
 Expose the `service-registry` service:
 
 ```
-kubectl expose deployments service-registry --type=LoadBalancer --port 80
+kubectl create -f services/
 ```
 
 At this point applications can register their endpoints.

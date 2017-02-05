@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-registry
+spec:
+  ports:
+    - name: api
+      port: 10080 
+      targetPort: 10080
+  selector:
+    app: service-registry
+  type: ClusterIP

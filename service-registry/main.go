@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -13,8 +12,6 @@ import (
 	"reflect"
 	"sync"
 	"time"
-
-	"github.com/certifi/gocertifi"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
@@ -28,10 +25,12 @@ const (
 )
 
 var (
+	apiAddr    string
+	httpAddr   string
 	httpClient *http.Client
 	listenAddr string
-	project    string
 	network    string
+	project    string
 )
 
 var html = `
@@ -75,24 +74,17 @@ type Endpoint struct {
 }
 
 func main() {
-	flag.StringVar(&listenAddr, "listen-addr", "127.0.0.1:8888", "HTTP listen address")
+	flag.StringVar(&apiAddr, "api", "127.0.0.1:10081", "API listen address")
+	flag.StringVar(&httpAddr, "http", "127.0.0.1:10080", "HTTP listen address")
 	flag.Parse()
 
 	log.Println("Starting service registry...")
 
 	var err error
 
-	caCerts, err := gocertifi.CACerts()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	timeout := 5 * time.Second
 	httpClient = &http.Client{
 		Timeout: timeout,
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{RootCAs: caCerts},
-		},
 	}
 
 	project, err = getProject()
@@ -103,7 +95,8 @@ func main() {
 	bm := newBackendManager()
 	go bm.healthChecks()
 
-	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		var endpoint Endpoint
 		dec := json.NewDecoder(r.Body)
 		err := dec.Decode(&endpoint)
@@ -116,7 +109,8 @@ func main() {
 		bm.add(endpoint)
 	})
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	httpMux := http.NewServeMux()
+	httpMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		t, err := template.New("registry").Parse(html)
 		if err != nil {
 			log.Println(err)
@@ -128,7 +122,21 @@ func main() {
 		}
 	})
 
-	log.Fatal(http.ListenAndServe(listenAddr, nil))
+	apiServer := http.Server{
+		Addr:    apiAddr,
+		Handler: apiMux,
+	}
+
+	httpServer := http.Server{
+		Addr:    httpAddr,
+		Handler: httpMux,
+	}
+
+	go func(){
+		log.Fatal(apiServer.ListenAndServe())
+	}()
+
+	log.Fatal(httpServer.ListenAndServe())
 }
 
 func getInstanceNetwork() (string, error) {
