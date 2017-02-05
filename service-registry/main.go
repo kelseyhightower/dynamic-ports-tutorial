@@ -28,7 +28,6 @@ var (
 	apiAddr    string
 	httpAddr   string
 	httpClient *http.Client
-	listenAddr string
 	network    string
 	project    string
 )
